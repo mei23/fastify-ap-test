@@ -4,6 +4,7 @@ import pointOfView from 'point-of-view';
 const httpSignature = require('http-signature');
 import * as path from 'path';
 import * as pug from 'pug';
+import cors from 'fastify-cors';
 
 const server = Fastify.fastify({
 	logger: true,
@@ -41,6 +42,53 @@ server.get('/test', async (request, reply) => {
 			title: 'タイトル'
 		});
 });
+
+const api = async (server: Fastify.FastifyInstance, opts: Fastify.FastifyPluginOptions, done: (err?: Error) => void) => {
+	server.register(cors);	// scoped
+
+	// default response header
+	server.addHook('preHandler', async (request, reply) => {
+		reply
+			.header('Cache-Control', 'private, max-age=0, must-revalidate');
+	});
+
+	server.get('/a', async (request, reply) => {
+		reply
+			.header('Cache-Control', 'public, max-age=240')
+			.send({ hello: 'p2 3' });
+	});
+
+	server.get('/2', async (request, reply) => {
+		request.body
+		reply
+			.send({ hello: 'p2 3' });
+	});
+
+	server.get('/e', async (request, reply) => {
+		reply
+			.send(new Error('err'));
+	});
+
+	server.post('/b', async (request, reply) => {
+		console.log(JSON.stringify(request.body));
+		reply.send({ hello: 'p2 3' });
+	});
+
+	done();
+};
+
+server.register(api, {
+	prefix: '/api'
+});
+
+/*
+API
+  post/get/upload
+
+para
+websocket
+file
+*/
 
 /*
 server.get('/assets/a.js', async (request, reply) => {

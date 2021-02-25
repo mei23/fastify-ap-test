@@ -25,6 +25,7 @@
     "@types/pug": "^2.0.4",
     "@types/rimraf": "^3.0.0",
     "fastify": "3.11.0",
+    "fastify-cors": "^5.2.0",
     "fastify-static": "^4.0.1",
     "gulp": "4.0.2",
     "gulp-sourcemaps": "3.0.0",
